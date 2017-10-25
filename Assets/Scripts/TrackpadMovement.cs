@@ -37,6 +37,8 @@ public class TrackpadMovement : MonoBehaviour {
 				lineRenderer.SetPosition(2, newPosition); //for visualizing the touchpad offset direction
 
 				transform.position = transform.position + (newPosition * movingSpeed);
+
+				print("transform position=" + transform.position);//debug
 			}
 		}	
 	}
