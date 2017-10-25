@@ -141,7 +141,7 @@ PlayerSettings:
   targetPixelDensity: 0
   resolutionScalingMode: 0
   applicationIdentifier:
-    Android: com.vrcourse.cosmicgame
+    Android: com.vrcourse.assignment2
   buildNumber: {}
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 24
@@ -236,7 +236,6 @@ PlayerSettings:
     m_Enabled: 1
     m_Devices:
     - daydream
-    - cardboard
   openGLRequireES31: 0
   openGLRequireES31AEP: 0
   webPlayerTemplate: APPLICATION:Default

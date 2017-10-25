@@ -4,60 +4,63 @@ using GVR.Input;
 using UnityEngine;
 
 public class Pointer : MonoBehaviour {
-    public LineRenderer laser;
+
     public GameObject headset;
     public GameObject pointerDot;
-    public GameObject target; // object that was
+    public GameObject target;
     public LayerMask layerMask;
+	public LineRenderer lineRenderer;
 
-    void Start() {
-        Vector3[] initLaserPositions = new Vector3[2] {Vector3.zero, Vector3.zero};
-        laser.SetPositions(initLaserPositions);
-        laser.SetWidth(0.01f, 0.01f);
-    }
 
-    void Update() {
-        Quaternion orientation = GvrControllerInput.Orientation;
-        // transform.localRotation = ori;
-        gameObject.transform.localRotation = orientation;
+	void Start() {
+		lineRenderer = gameObject.GetComponent<LineRenderer> ();
+		lineRenderer.startWidth = 0.03f;
+		lineRenderer.endWidth = 0.03f;
+	}
 
-        Vector3 startPosition = transform.position;
+
+	void Update() {
+
+		// Rotating the controller
+		Quaternion orientation = GvrControllerInput.Orientation;
+		transform.rotation = orientation;
+
+		Vector3 startPosition = transform.position;
         Vector3 direction = GvrControllerInput.Orientation * Vector3.forward;
         float length = 200f;
         
-        ShootLaserFromTargetPosition(startPosition, direction, length);
-        laser.enabled = true;
 
-        // Teleportation
+		// Raycasting
+		RaycastHit hit = ShootLaserFromTargetPosition(startPosition, direction, length, pointerDot, lineRenderer);
+
+
+		// Teleportation
         if (GvrControllerInput.ClickButtonDown) {
-            RaycastHit hit;
-            Ray ray = new Ray(startPosition, direction);
-            
-            if (Physics.Raycast(ray, out hit, length, layerMask)) {
-                // GameObject hitGameObject = hit.transform.gameObject;
-                // Vector3 currentTargetPos = new Vector3(hit.point.x, transform.localPosition.y, hit.point.z);
-                // transform.localPosition = currentTargetPos;
-                Vector3 teleportToPosisition = new Vector3(hit.point.x, hit.point.y + 5, hit.point.z);
-                headset.transform.position = teleportToPosisition;
-            }
+			Vector3 teleportToPosisition = new Vector3(hit.point.x, headset.transform.position.y, hit.point.z);
+            headset.transform.position = teleportToPosisition;
         }
-    }
+	}
 
-    void ShootLaserFromTargetPosition(Vector3 startPosition, Vector3 direction, float length) {
+
+	private RaycastHit ShootLaserFromTargetPosition(Vector3 startPosition, Vector3 direction, float length, GameObject dot, LineRenderer line) {
         RaycastHit hit;
         Ray ray = new Ray(startPosition, direction);
 
-        if (Physics.Raycast(ray, out hit, length, layerMask)) {
+        if (Physics.Raycast(ray, out hit, length)) {
             target = hit.transform.gameObject;
-            pointerDot.transform.position = hit.point;
-            pointerDot.SetActive(true);
+			dot.transform.position = hit.point;
+			dot.SetActive(true);
         } else {
             target = null;
-            pointerDot.SetActive(false);
+			dot.SetActive(false);
         }
 
         Vector3 endPosition = startPosition + (length * direction);
-        laser.SetPosition(0, startPosition);
-        laser.SetPosition(1, endPosition);
+		line.SetPosition(0, startPosition);
+		line.SetPosition(1, endPosition);
+
+		return hit;
     }
+
+
 }
